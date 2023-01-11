@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "taipy-experimental-data-node-ui"
+version = "0.1.0"
+description = ""
+authors = ["Grégoire Marabout-Demazure <gmarabout@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.9.0"
+taipy-core = { git = "https://github.com/gmarabout/taipy-core.git", branch = "gmarabout/data_node_edit_tracking" }
+taipy-gui = { git = "https://github.com/Avaiga/taipy-gui.git", branch = "develop" }
+xgboost = "^1.7.2"
+numpy = "^1.24.1"
+pandas = "^1.5.2"
+scikit-learn = "^1.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
