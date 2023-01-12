@@ -66,6 +66,7 @@ def on_change(state, var_name: str, var_value):
         # Propagate to list of edits:
         refresh_edit_log(state)
 
+
 def refresh_edit_log(state):
     # Forces a refresh of the edit log:
     data_node = state.current_data_node[1]
