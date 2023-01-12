@@ -1,17 +1,16 @@
 [tool.poetry]
-name = "taipy-experimental-data-node-ui"
+name = "taipy-experimental-edit-log"
 version = "0.1.0"
-description = ""
+description = "Experimentations for a Data Node Edit Log Viewer."
 authors = ["Grégoire Marabout-Demazure <gmarabout@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.9.0"
-taipy-core = { git = "https://github.com/gmarabout/taipy-core.git", branch = "gmarabout/data_node_edit_tracking" }
-taipy-gui = { git = "https://github.com/Avaiga/taipy-gui.git", branch = "develop" }
-xgboost = "^1.7.2"
+taipy = { git = "https://github.com/Avaiga/taipy.git", branch = "develop" }
+#taipy-core = { git = "https://github.com/gmarabout/taipy-core.git", branch = "gmarabout/data_node_edit_tracking" }
 numpy = "^1.24.1"
+xgboost = "^1.7.2"
 pandas = "^1.5.2"
 scikit-learn = "^1.2.0"
 
