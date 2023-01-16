@@ -134,12 +134,12 @@ scenario_manager_page = """
 <|{current_data_node}|selector|lov={all_data_nodes}|dropdown|label=<select a data node>|adapter={lambda dn:dn[0]}|>
 
 <|Create New Scenario...|button|on_action=create_scenario_clicked|>
+<|Run Scenario|button|active={current_scenario is not None}|on_action=on_submit_button_clicked|>
 |>
 
 <|part|class_name=card|
 ## Data Node Edit Log
 <|{edits}|table|columns={history_table_columns}|width=50vw|>
-<|Run Scenario|button|on_action=on_submit_button_clicked|>
 <|Set value...|button|active={len(edits) > 0}|on_action=on_set_value_clicked|>
 |>
 
