@@ -66,9 +66,10 @@ def on_change(state, var_name: str, var_value):
 
 def refresh_edit_log(state):
     # Forces a refresh of the edit log:
-    data_node_id = state.current_data_node[0]
-    data_node = taipy.get(data_node_id)
-    state.edits = get_edit_log(data_node) if data_node else []
+    if state.current_data_node:
+        data_node_id = state.current_data_node[0]
+        data_node = taipy.get(data_node_id)
+        state.edits = get_edit_log(data_node) if data_node else []
 
 
 def create_scenario_clicked(state):
@@ -140,6 +141,7 @@ scenario_manager_page = """
 <|part|class_name=card|
 ## Data Node Edit Log
 <|{edits}|table|columns={history_table_columns}|width=50vw|>
+<|Refresh|button|on_action=refresh_edit_log|>
 <|Set value...|button|active={len(edits) > 0}|on_action=on_set_value_clicked|>
 |>
 
