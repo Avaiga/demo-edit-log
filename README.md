@@ -1,13 +1,25 @@
-# ⚗️  Taipy-edit-log
+# Demo Edit Log
 
-This app is an experimentation on how to build an Edit Log viewer for Taipy.
-It shows how to use the `edits` property of a Data Node to show a live view of all the edits on this data node.
+## What is the Demo Edit Log
+
+This app is an example on how to build an Edit Log viewer for Taipy.
+
+It demonstrates how you cna use the `edits` property of a Data Node to get the history of all the edits on this data node.
+
+Please refer to the API documentation of DataNode for more details.
+
+## Demo Type
+
+- **Level**: Advanced
+- **Topic**: Taipy-Core
+- **Components/Controls**:
+  - Taipy GUI: Selector, Dialog, Table
+
 
 ## Installation
+Check out our [`INSTALLATION.md`](docs/INSTALLATION.md) file.
 
-Taipy-core from [this branch](https://github.com/gmarabout/taipy-core/tree/gmarabout/data_node_edit_tracking) is required.
-
-# Overview
+## Demo Overview
 
 Run the app using `python main.py`.
 
@@ -49,3 +61,11 @@ You can also run the scenario by clicking the "Run scenario" button:
 <p align="center">
   <img src="docs/4_run_scenario.gif" alt="drawing" width="700"/>
 </p>
+
+## Contributing
+
+Want to help build this demo? Check out our [`CONTRIBUTING.md`](CONTRIBUTING.md) file.
+
+## License
+
+Licensed under the Apache License, Version 2.0. See [`LICENSE.md`](LICENSE.md).
