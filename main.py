@@ -17,12 +17,8 @@ Config.configure_job_executions(mode="standalone", max_nb_of_workers=1)
 node_start_cfg = Config.configure_data_node(
     id="node_start", default_data=[1, 2], description="This is the initial data node."
 )
-node_end_cfg = Config.configure_data_node(
-    id="node_end", description="This is the result data node."
-)
-task_cfg = Config.configure_task(
-    id="task", input=[node_start_cfg], output=node_end_cfg, function=task_function
-)
+node_end_cfg = Config.configure_data_node(id="node_end", description="This is the result data node.")
+task_cfg = Config.configure_task(id="task", input=[node_start_cfg], output=node_end_cfg, function=task_function)
 pipeline_cfg = Config.configure_pipeline(id="pipeline", task_configs=[task_cfg])
 Config.configure_scenario("My_super_scenario", [pipeline_cfg])
 
@@ -30,7 +26,7 @@ Config.configure_scenario("My_super_scenario", [pipeline_cfg])
 # Variables for bindings
 all_scenarios = []  # List of scenarios
 all_scenarios_configs = []  # List of scenario configs
-all_data_nodes = []  # List of tuple[str,DataNode]
+all_data_nodes = []  # List of node IDs
 
 current_scenario = None
 current_data_node = None
@@ -49,14 +45,15 @@ set_value_dialog_visible = False
 
 
 def on_init(state):
-    state.all_scenarios = taipy.get_scenarios()
-    state.all_scenarios_configs = list(Config.scenarios.values())
+    state.all_scenarios = [(sc.id, sc.name) for sc in taipy.get_scenarios()]
+    state.all_scenarios_configs = [sc.id for sc in Config.scenarios.values()]
 
 
 def on_change(state, var_name: str, var_value):
     if var_name == "current_scenario":
+        scenario = taipy.get(var_value[0])
         # Propagate to list of nodes:
-        state.all_data_nodes = list(var_value.data_nodes.items()) if var_value else []
+        state.all_data_nodes = [(dn.id, dn.config_id) for dn in scenario.data_nodes.values()]
     if var_name == "all_data_nodes":
         # Propagate to current data node (pick any...):
         if var_value and len(var_value) > 0:
@@ -69,7 +66,8 @@ def on_change(state, var_name: str, var_value):
 
 def refresh_edit_log(state):
     # Forces a refresh of the edit log:
-    data_node = state.current_data_node[1]
+    data_node_id = state.current_data_node[0]
+    data_node = taipy.get(data_node_id)
     state.edits = get_edit_log(data_node) if data_node else []
 
 
@@ -86,7 +84,8 @@ def get_edit_log(data_node):
 
 
 def on_submit_button_clicked(state):
-    scenario = state.current_scenario
+    scenario_id = state.current_scenario[0]
+    scenario = taipy.get(scenario_id)
     taipy.submit(scenario)
     # Force refresh of current data node:
     refresh_edit_log(state)
@@ -98,24 +97,25 @@ def on_set_value_clicked(state):
 
 
 def create_scenario_dialog_action(state, id, action, payload):
+    state.create_scenario_dialog_visible = False
     btn_idx = payload["args"][0]
     if btn_idx == 0:  # OK button
-        scenario_cfg = state.current_scenario_config
+        scenario_cfg = Config.scenarios[state.current_scenario_config]
         name = state.scenario_name
         scenario = taipy.create_scenario(config=scenario_cfg, name=name)
         all_scenarios = state.all_scenarios
-        all_scenarios.append(scenario)
+        all_scenarios.append((scenario.id, scenario.name))
         state.all_scenarios = all_scenarios
         notify(state, message=f"Scenario {scenario.name} created!")
-    state.create_scenario_dialog_visible = False
 
 
 def set_value_dialog_action(state, id, action, payload):
     btn_idx = payload["args"][0]
     if btn_idx == 0:  # OK button
-        data_node = state.current_data_node
-        data_node[1].write(state.value, message=state.commit_message)
-        state.current_data_node = data_node
+        data_node_id = state.current_data_node[0]
+        node = taipy.get(data_node_id)
+        node.write(state.value, message=state.commit_message)
+        state.current_data_node = state.current_data_node
 
     state.set_value_dialog_visible = False
 
@@ -130,8 +130,8 @@ history_table_columns = {
 scenario_manager_page = """
 <|part|class_name=card|
 ## Data Node Selection
-<|{current_scenario}|selector|lov={all_scenarios}|dropdown|label=<select a scenario>|adapter={lambda sc:sc.name}|>
-<|{current_data_node}|selector|lov={all_data_nodes}|dropdown|label=<select a data node>|adapter={lambda dn:dn[0]}|>
+<|{current_scenario}|selector|lov={all_scenarios}|dropdown|label=<select a scenario>|>
+<|{current_data_node}|selector|lov={all_data_nodes}|dropdown|label=<select a data node>|>
 
 <|Create New Scenario...|button|on_action=create_scenario_clicked|>
 <|Run Scenario|button|active={current_scenario is not None}|on_action=on_submit_button_clicked|>
@@ -146,15 +146,15 @@ scenario_manager_page = """
 <|{create_scenario_dialog_visible}|dialog|title=Create Scenario|labels=OK;Cancel|on_action=create_scenario_dialog_action|
 
 Select a scenario config:
-<|{current_scenario_config}|selector|dropdown|lov={all_scenarios_configs}|adapter={lambda cfg: cfg.id}|>
+<|{current_scenario_config}|selector|dropdown|lov={all_scenarios_configs}|>
 
 Enter a name for your scenario:
 
-<|{scenario_name}|input|>
+<|{scenario_name}|input|change_delay=10|>
 |>
 
 
-<|{set_value_dialog_visible}|dialog|title=Set value|labels=OK;Cancel|on_action=set_value_dialog_action|
+<|{set_value_dialog_visible}|dialog|title=Set value|labels=OK;Cancel|change_delay=10|on_action=set_value_dialog_action|
 <|{value}|input|label=Enter a value|>
 
 <|Optional commit message|expandable|expanded=False|
