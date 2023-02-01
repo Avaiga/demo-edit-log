@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-taipy = {ref = "develop", git = "https://github.com/avaiga/taipy.git"}
+taipy = ">=2.1.0"
 scikit-learn = "*"
 numpy = "*"
 pandas = "*"
@@ -21,7 +21,7 @@ types-toml = "*"
 autopep8 = "*"
 
 [requires]
-python_version = "3.10"
+python_version = "3.11"
 
 [pipenv]
 allow_prereleases = true
